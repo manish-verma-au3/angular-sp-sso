@@ -22,6 +22,7 @@ var sp_options = {
   allow_unencrypted_assertion: true
 };
 var sp = new saml2.ServiceProvider(sp_options);
+
 // Create identity provider
 var idp_options = {
   // sso_login_url: "https://idp-stage.b2cdev.com/saml/sso",
@@ -32,7 +33,7 @@ var idp_options = {
   //fs.readFileSync("idp-private-key.pem").toString(),
 };
 var idp = new saml2.IdentityProvider(idp_options);
- 
+//console.log(idp);
 // ------ Define express endpoints ------
  
 // Endpoint to retrieve metadata
@@ -40,7 +41,13 @@ app.get("/saml/metadata", function(req, res) {
   res.type('application/xml');
   res.send(sp.create_metadata());
 });
- 
+
+app.post("/sp/saml2-logout", function(req, res) {
+  res.redirect('http://localhost:4200?logout=true');
+});
+app.post("/acs", function(req, res) {
+  res.redirect('http://localhost:4200?logout=true');
+});
 // Starting point for login
 app.get("/login", function(req, res) {
 
@@ -58,7 +65,7 @@ app.get("/login", function(req, res) {
     let iv = secret.substr(0, 16)
     let decryptor = crypto.createDecipheriv(encryptionMethod, secret, iv);
     return decryptor.update(encryptedMessage, 'base64', 'utf8') + decryptor.final('utf8');
-}
+  }
   let usertoken = encrypt('kjkhjkjhk399942343@b2cdev.com'+':'+encrypt('477052-2020-12-24 10:53:03'));
   let tadd = encrypt('477052-2020-12-24 10:53:03'); // 477052-2020-12-23 06:22:24
 
@@ -69,6 +76,7 @@ app.get("/login", function(req, res) {
   // console.log(decrypted)
   console.log("User Token");
   console.log(timeDecrypt)
+  //console.log(sp);
   // process.exit();
   // sp.create_login_request_url(idp, {relay_state: 'https://b2c-app-docvault.b2cdev.com?option=com_loan&Itemid=110&service=APP&ut='+usertoken}, function(err, login_url, request_id) {
   sp.create_login_request_url(idp, {relay_state: 'https://b2c-app-docvault.b2cdev.com?option=com_loan&Itemid=110'}, function(err, login_url, request_id) {
@@ -83,7 +91,6 @@ app.get("/login", function(req, res) {
 // Assert endpoint for when login completes
 app.post("/assert", function(req, res) {
   var options = {request_body: req.body};
-  console.log("fdsfsfdfs");
   sp.post_assert(idp, options, function(err, saml_response) {
     console.log(err);
     if (err != null)
@@ -94,7 +101,8 @@ app.post("/assert", function(req, res) {
     name_id = saml_response.user.name_id;
     session_index = saml_response.user.session_index;
  
-    res.send("Hello "+saml_response.user.name_id+" --- logout > <a href='/logout'>logout</a>");
+    //res.send("Hello "+saml_response.user.name_id+" --- logout > <a href='/logout'>logout</a>");
+    res.redirect('http://localhost:4200');
     // res.send(saml_response);
   });
 });
