@@ -1,9 +1,10 @@
-<div fxLayoutAlign="center center"  class='center'>
-    <h1>Welcome to home</h1>
-    
-    <div class='btn'>
-      <button mat-raised-button color="primary" *ngIf="!settoken" (click)="navigateToLogin()">Login</button>&nbsp;
-      <button mat-raised-button color="primary" *ngIf="settoken" (click)="navigateToLogout()">Logout</button>
-    </div>
+<div fxLayout="row" fxFlex="100" fxLayoutAlign="center start">
+    <h1  *ngIf="!settoken">Welcome</h1>
+    <h1 *ngIf="settoken">Home-Page</h1>
 
+</div>
+
+<div fxLayout="row" fxLayoutAlign="end start">
+  <button mat-raised-button color="primary" *ngIf="!settoken" (click)="navigateToLogin()">Login</button>&nbsp;
+  <button mat-raised-button color="primary" *ngIf="settoken" (click)="navigateToLogout()">Logout</button>
 </div>
