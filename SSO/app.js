@@ -58,21 +58,9 @@ app.post("/sp/saml2-logout", function (req, res) {
   console.log("token = " + base64data);
   res.redirect('http://localhost:4200/home?token=' + base64data);
 });
+
 // Starting point for login
 app.get("/login", function (req, res) {
-
-  //let usertoken = encrypt('kjkhjkjhk399942343@b2cdev.com'+':'+encrypt('477052-2020-12-24 10:53:03'));
-  //let tadd = encrypt('477052-2020-12-24 10:53:03'); // 477052-2020-12-23 06:22:24
-
-  // let decrypted = decrypt('tyQXyUV85vLaD2JUGHPMunm979BYpgVEfDN8kSrqhRSUqhHJQZBnmih+Gj5TAmQ+daq8LhJRkymn/tmxnT7h0QfV+/mYlvB7SvAuWOdKBag=');
-  //let timeDecrypt = decrypt('WWNDdK15XNDXeobg7J4/0wTNatVuaZqfzjJ8GDQlbD8=');
-  // console.log(usertoken)
-  //console.log(tadd)
-  // console.log(decrypted)
-  //console.log("User Token");
-  //console.log(timeDecrypt)
-  //console.log(sp);
-  // process.exit();
   // sp.create_login_request_url(idp, {relay_state: 'https://b2c-app-docvault.b2cdev.com?option=com_loan&Itemid=110&service=APP&ut='+usertoken}, function(err, login_url, request_id) {
   sp.create_login_request_url(idp, { relay_state: 'https://b2c-app-docvault.b2cdev.com?option=com_loan&Itemid=110' }, function (err, login_url, request_id) {
     if (err != null)
@@ -107,6 +95,7 @@ app.post("/assert", function (req, res) {
     let buff = new Buffer(data);
     let base64data = buff.toString('base64');
     console.log("token = " + base64data);
+    //client.set(name_id, base64data);
     //res.send("Hello "+saml_response.user.name_id+" --- logout > <a href='/logout'>logout</a>");
     res.redirect('http://localhost:4200/home?token=' + base64data);
     // res.send(saml_response);
@@ -115,9 +104,12 @@ app.post("/assert", function (req, res) {
 
 // Starting point for logout
 app.get("/logout", function (req, res) {
+  //client.get(name_id);
+  let buff = new Buffer(req.query.token, 'base64');
+  let token = JSON.parse(decrypt(buff.toString('ascii')));
   var options = {
-    name_id: name_id,
-    session_index: session_index
+    name_id: token.data.name_id,
+    session_index: token.data.session_index
   };
 
   sp.create_logout_request_url(idp, options, function (err, logout_url) {

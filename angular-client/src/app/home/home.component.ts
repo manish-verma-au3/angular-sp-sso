@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import * as CryptoJS from 'crypto-js';
-
+import { HttpClient } from '@angular/common/http';
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
@@ -10,7 +10,8 @@ import * as CryptoJS from 'crypto-js';
 export class HomeComponent implements OnInit {
 
   token: string;
-  constructor(private route: ActivatedRoute, private router: Router,) { }
+  constructor(private route: ActivatedRoute, private router: Router,
+    private http: HttpClient,) { }
 
   ngOnInit(): void {
     this.token = this.route.snapshot.queryParams['token'];
@@ -34,7 +35,7 @@ export class HomeComponent implements OnInit {
   }
 
   navigateToLogout() {
-    window.location.href = 'http://localhost:4000/logout';
+    window.location.href = 'http://localhost:4000/logout?token='+this.token;
   }
 
   get settoken() {
