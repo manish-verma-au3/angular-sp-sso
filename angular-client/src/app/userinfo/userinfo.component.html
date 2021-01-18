@@ -1,9 +1,28 @@
-<div fxLayout="row" fxLayoutAlign="end start">
-    <h3 *ngIf="checkToken">Hi! <span [innerText]="nameId"></span></h3>
-</div>
-
-<div fxLayout="row" fxLayoutAlign="end start">
-
-    <button mat-raised-button color="primary" *ngIf="!checkToken" (click)="navigateToLogin()">Login</button>
-    <button mat-raised-button color="primary" *ngIf="checkToken" (click)="navigateToLogout()">Logout</button>
-</div>
+<ul class="navbar-nav ml-auto nav-flex-icons">
+    <li class="nav-item">
+        <span *ngIf="checkToken" class="nav-link">Hi! <span  [innerText]="nameId"></span></span>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link">
+        <mdb-icon fab icon="twitter"></mdb-icon>
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link">
+        <mdb-icon fab icon="google-plus"></mdb-icon>
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link">
+        <div class="btn-group" mdbDropdown>
+          <mdb-icon fas icon="user" mdbDropdownToggle></mdb-icon>
+          <div class="dropdown-menu dropdown-menu-right dropdown-primary">
+            <a class="dropdown-item" *ngIf="!checkToken" (click)="navigateToLogin()">Login</a>
+            <a class="dropdown-item" *ngIf="checkToken" (click)="navigateToLogout()">Logout</a>
+            <div class="divider dropdown-divider"></div>
+            <a class="dropdown-item" href="#">Separated link</a>
+          </div>
+        </div>
+      </a>
+    </li>
+  </ul>

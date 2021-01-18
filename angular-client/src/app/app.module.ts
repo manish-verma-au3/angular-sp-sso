@@ -1,6 +1,7 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button'
+import { MDBBootstrapModule } from 'angular-bootstrap-md';
 import { AppRoutingModule } from './app-routing.module';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { HttpClientModule } from '@angular/common/http';
@@ -24,7 +25,9 @@ import { UserinfoComponent } from './userinfo/userinfo.component';
     BrowserAnimationsModule,
     MatButtonModule,
     HttpClientModule,
-    FlexLayoutModule
+    FlexLayoutModule,
+    MDBBootstrapModule.forRoot()
+    
   ],
   providers: [],
   bootstrap: [AppComponent]
