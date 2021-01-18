@@ -1,0 +1,9 @@
+<div fxLayout="row" fxLayoutAlign="end start">
+    <h3 *ngIf="checkToken">Hi! <span [innerText]="nameId"></span></h3>
+</div>
+
+<div fxLayout="row" fxLayoutAlign="end start">
+
+    <button mat-raised-button color="primary" *ngIf="!checkToken" (click)="navigateToLogin()">Login</button>
+    <button mat-raised-button color="primary" *ngIf="checkToken" (click)="navigateToLogout()">Logout</button>
+</div>

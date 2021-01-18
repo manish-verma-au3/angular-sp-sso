@@ -67,7 +67,7 @@ router.post("/acs-url", function (req, res) {
         let buff = Buffer.from(data);
         let base64data = buff.toString('base64');
         //res.send("Hello "+saml_response.user.name_id+" --- logout > <a href='/logout'>logout</a>");
-        res.redirect(process.env.FRONTEND_BASE_URL + '/home?token=' + base64data);
+        res.redirect(process.env.FRONTEND_BASE_URL + '/?token=' + base64data);
     });
 });
 
@@ -102,7 +102,7 @@ router.post("/sp/saml2-logout", function (req, res) {
     let data = SecurityService.encrypt(JSON.stringify(userdata));
     let buff = Buffer.from(data);
     let base64data = buff.toString('base64');
-    res.redirect(process.env.FRONTEND_BASE_URL + '/home?token=' + base64data);
+    res.redirect(process.env.FRONTEND_BASE_URL + '/?token=' + base64data);
 });
 
 

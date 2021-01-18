@@ -1,0 +1,7 @@
+{
+    "/saml/*": {
+        "target": "http://localhost:3100",
+        "secure": false,
+        "logLevel": "debug"
+    }
+}

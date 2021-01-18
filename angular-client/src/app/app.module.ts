@@ -7,15 +7,16 @@ import { HttpClientModule } from '@angular/common/http';
 import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { HomeComponent } from './home/home.component';
-import { LoginComponent } from './login/login.component';
-import { LogoutComponent } from './logout/logout.component';
+import { AboutComponent } from './about/about.component';
+import { UserinfoComponent } from './userinfo/userinfo.component';
+
 
 @NgModule({
   declarations: [
     AppComponent,
     HomeComponent,
-    LoginComponent,
-    LogoutComponent
+    AboutComponent,
+    UserinfoComponent
   ],
   imports: [
     BrowserModule,

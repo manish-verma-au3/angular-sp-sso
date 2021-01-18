@@ -1,17 +1,15 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import { HomeComponent } from './home/home.component';
-import { LoginComponent } from './login/login.component';
-import { LogoutComponent } from './logout/logout.component';
+import { AboutComponent } from './about/about.component';
 
 const routes: Routes = [
-  { path: 'home', component: HomeComponent},
-  { path: 'login', component: LoginComponent},
-  { path: 'logout', component: LogoutComponent},
-  { path: '', redirectTo:'/home',pathMatch:'full'},
+  { path: '', component: HomeComponent},
+  { path: 'about-us', component: AboutComponent},
+  { path: '', redirectTo:'/',pathMatch:'full'},
 
   // otherwise redirect to home
-  { path: '*', redirectTo: 'home' }
+  { path: '*', redirectTo: '' }
 ];
 
 @NgModule({
