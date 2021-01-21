@@ -5,7 +5,8 @@
 export const environment = {
   production: false,
   sp_base_url:'http://localhost:4000/',
-  idp_base_url:'http://localhost:3100/'
+  idp_base_url:'http://localhost:3100/',
+  appDomain: '.b2cdev.com'
 };
 
 /*

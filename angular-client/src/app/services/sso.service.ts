@@ -1,5 +1,9 @@
 import { Injectable } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
+import { BehaviorSubject, Observable } from 'rxjs';
+import { CookieService } from 'ngx-cookie-service';
+import { SecurityService } from './security.service';
+import { User } from '../models';
 import * as CryptoJS from 'crypto-js';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../environments/environment';
@@ -7,23 +11,45 @@ import { environment } from '../../environments/environment';
   providedIn: 'root'
 })
 export class SsoService {
+  private currentUserSubject: BehaviorSubject<User>;
+  public currentUser: Observable<User>;
   t: string;
   sessionIndex: string = '';
   secretKey: any = 'mcXUpsjDD39IYnrMf64P3CtlxkdHfSn5';
 
-  constructor(private route: ActivatedRoute, private router: Router, private http: HttpClient) {
-    this.t = this.route.snapshot.queryParams['token'];
-    let tkn = this.getToken();
-    if (tkn) {
-      let parseToken = this.tokenParse(tkn);
-      this.checkAuth(parseToken);
+  constructor(
+    private route: ActivatedRoute,
+    private http: HttpClient,
+    private cookieService: CookieService,
+    private security: SecurityService,) {
+    if (this.cookieService.get('auth') !== '') {
+      this.currentUserSubject = new BehaviorSubject<User>(JSON.parse(this.security.get(this.secretKey, this.cookieService.get('auth'))));
     }
+    else {
+      this.currentUserSubject = new BehaviorSubject<User>(JSON.parse(null));
+    }
+    this.currentUser = this.currentUserSubject.asObservable();
+
+    this.t = this.route.snapshot.queryParams['token'];
+    if (this.t === undefined || this.t === null || this.t === "") {
+      this.t = this.getToken();
+    }
+
+    if (this.t) {
+      let parseToken = this.tokenParse(this.t);
+      this.checkAuthentication(parseToken);
+    }
+  }
+
+  public get currentUserValue(): User {
+    return this.currentUserSubject.value;
   }
 
   //get token
   getToken() {
-    if (localStorage.getItem('token') !== null) {
-      this.t = localStorage.getItem('token');
+    if (this.currentUserValue !== null) {
+      let authInfo = JSON.parse(this.security.get(this.secretKey, this.cookieService.get('auth')));
+      this.t = authInfo.token;
     }
     if (this.t === undefined || this.t === null || this.t === "") {
       this.t = null;
@@ -66,20 +92,31 @@ export class SsoService {
   }
 
   // check authentication of token
-  checkAuth(token: any) {
+  checkAuthentication(token: any) {
     if (token.data.login_status === false) {
-      localStorage.removeItem("token");
+      this.setLogout();
     }
     else {
-      localStorage.setItem('token', this.t);
+      let uData = {
+        "name_id": token.data.name_id,
+        "session_index": token.data.session_index,
+        "login_status": true,
+        'token': this.t,
+      }
+      if (location.hostname === "localhost") {
+        this.cookieService.set('auth', this.security.set(this.secretKey, JSON.stringify(uData)), 60, '/');
+      }
+      else {
+        this.cookieService.set('auth', this.security.set(this.secretKey, JSON.stringify(uData)), 60, '/', environment.appDomain);
+      }
+      this.currentUserSubject.next(uData);
     }
   }
 
   // claim sso when we try to access any service or component
   claimSSO() {
-    console.log("sso clainm token = " + this.t);
-    if (this.t) {
-      this.sessionIndex = this.tokenParse(this.t).data.session_index;
+    if (this.currentUserValue) {
+      this.sessionIndex = this.currentUserValue.session_index;
       this.http.post('saml/claim', { 'session_index': this.sessionIndex })
         .subscribe(
           (data: any) => {
@@ -87,7 +124,7 @@ export class SsoService {
               console.log("claim sso call");
             }
             else {
-              localStorage.removeItem("token");
+              this.setLogout();
             }
           },
           error => {
@@ -99,12 +136,24 @@ export class SsoService {
 
   // check token that it is set in frontend or not
   checkToken() {
-    if (localStorage.getItem('token') !== null) {
+    if (this.currentUserValue !== null) {
       return true;
     }
     else {
       return false;
     }
+  }
+
+  setLogout() {
+    if (location.hostname === "localhost") {
+      this.cookieService.delete('auth', '/', location.hostname);
+    }
+    else {
+      this.cookieService.delete('auth', '/', environment.appDomain);
+    }
+    this.currentUserSubject.next(null);
+    localStorage.clear();
+    sessionStorage.clear();
   }
 
 }
