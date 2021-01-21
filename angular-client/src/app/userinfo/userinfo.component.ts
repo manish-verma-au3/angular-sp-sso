@@ -8,23 +8,16 @@ import { environment } from '../../environments/environment';
   styleUrls: ['./userinfo.component.css']
 })
 export class UserinfoComponent implements OnInit {
-  token: string;
   nameId: string;
   constructor(private sso: SsoService) { }
 
   ngOnInit(): void {
-    this.token = this.sso.getToken();
-    let tokenData = this.sso.tokenParse(this.token);
-    if(tokenData)
-    {
-      if (tokenData.data.login_status === false) {
-        this.nameId = '';
-      }
-      else {
-        this.nameId = tokenData.data.name_id;
-      }
+    if (this.sso.currentUserValue) {
+      this.nameId = this.sso.currentUserValue.name_id;
     }
-    
+    else {
+      this.nameId = '';
+    }
   }
 
   navigateToLogin() {
